@@ -1,0 +1,118 @@
+<link rel="stylesheet" type="text/css" href="/css/style.css" media="screen"/>
+<script type="text/javascript" href="Transaction.js"></script>
+
+<div class="list page-container">
+    <object class="nav-bar-object" type="text/html" data="navbar.html"></object>
+    <object id="loading-object" class="loading-object" type="text/html" data="loading.html"></object>
+    <div id="content" style="display:none">
+        <div class="net-total-row"><span>Net Amount:</span><span id="total-net-amount"></span></div>
+        <div class="datepicker-container">Start Date<input id="start-date"></input></div>
+        <div class="datepicker-container">End Date<input id="end-date"></input></div>
+        <div id='transaction-list'></div>
+    </div>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script>
+    var Trades = null;
+    $.when(
+        $.getScript( "utils.js" ),
+        $.getScript( "Transaction.js" ),
+        $.Deferred(function( deferred ){
+            $( deferred.resolve );
+        })
+    ).done(function(){
+        utils.startLoading(.5);
+        utils.getAccessToken(function(accessToken) {
+            Trades = new Transactions();
+            var transactionsDict = Trades.fetch(accessToken, render);
+        });
+    });
+
+    $("#start-date").flatpickr();
+    $("#start-date").on('change', function(e) { Trades.setStartDate(new Date($(this).val()))});
+    $("#end-date").flatpickr();
+    $("#end-date").on('change', function(e) { Trades.setEndDate(new Date($(this).val()))});
+
+    function render(tradesByDayCusipGroupDict) {
+        $('#transaction-list').empty();
+        if (Object.keys(tradesByDayCusipGroupDict).length === 0) {
+            $('#transaction-list').append('<div class="no-results">No results found</div>');
+        }
+        // For each date group
+        var totalNetAmount = 0;
+        for (var tDate in tradesByDayCusipGroupDict){
+            $('#transaction-list').append('<h2>'+new Date(tDate).toDateString()+'</h2>');
+            var dayNetTotal = 0;
+            var dayFeesTotal = 0;
+            var dayContractCount = 0;
+            var dayBlock = $('<div class="day-block"></div>');
+
+            // For each cusip group
+            for (var cusipId in tradesByDayCusipGroupDict[tDate]){
+                var transactionGroupItem = tradesByDayCusipGroupDict[tDate][cusipId][0]['transactionItem'];
+                var sellGroup = transactionGroupItem['instruction'] === 'SELL';
+                var buyGroup = transactionGroupItem['instruction'] === 'BUY';
+                var sellOrBuy = sellGroup ? 'Sell' : 'Buy';
+                var assetTypeGroup = transactionGroupItem['instrument']['assetType'];
+                var putCallGroup = transactionGroupItem['instrument']['putCall'] === 'PUT' ? 'P' : 'C';
+                var expirationDateGroup = formatDate(new Date(transactionGroupItem['instrument']['optionExpirationDate']));
+                var groupDescription = transactionGroupItem['instrument']['description'];
+                var symbol = transactionGroupItem['instrument']['underlyingSymbol'];
+                var contractCount = 0
+                var netTotal = 0;
+                var feesTotal = 0;
+
+                // For each transaction
+                for ( var index in tradesByDayCusipGroupDict[tDate][cusipId] ) {
+                    var transaction = tradesByDayCusipGroupDict[tDate][cusipId][index];
+                    var transactionDate_ =  transaction['transactionDate'];
+                    var count = transaction['transactionItem']['amount'];
+                    var netAmount = transaction['netAmount'];
+                    var fees = transaction['totalFees'];
+                    var sell = transaction['transactionItem']['instruction'] === 'SELL';
+                    var buy = transaction['transactionItem']['instruction'] === 'BUY';
+                    feesTotal += fees
+                    netTotal += (netAmount - fees);
+                    contractCount += transaction['transactionItem']['amount'];
+                }
+                dayNetTotal += netTotal;
+                dayFeesTotal += feesTotal;
+                dayContractCount += contractCount;
+                var plClass = netTotal >= 0 ? 'profit' : 'loss';
+
+                var transactionTable = $('<table class="transaction-table '+plClass+'"><tbody></tbody></table>')
+                        .append('<tr><td><b>Asset</b></td><td>' + assetTypeGroup + ' (' + groupDescription + ')</td></tr>')
+                        .append('<tr><td><b>Contracts</b></td><td>' + contractCount / 2 + '</td></tr>')
+                        .append('<tr><td><b>Fees</b></td><td>' + feesTotal.toFixed(2) + '</td></tr>')
+                        .append('<tr><td><b>P/L</b></td><td>'+ netTotal.toFixed(2) + '</td></tr>');
+                var transactionTableBlock = $('<div class="transaction-block"></div>')
+                    .append( transactionTable)
+                    .appendTo(dayBlock);
+                    
+            }
+
+            var plDayClass = dayNetTotal >= 0 ? 'profit' : 'loss';
+            var tableBlock = $('<div class="day-total-block '+plDayClass+'"></div>');
+            var table = $('<table class="day-total-table"><tbody></tbody></table>');
+            tableBlock 
+                 .append('<h3 style="margin-top:0">Day Total</h3>')
+                 .append( table
+                             .append('<tr><td><b>Contracts</b></td><td>' + dayContractCount / 2 + '</td></tr>')
+                             .append('<tr><td><b>Fees</b></td><td>' + dayFeesTotal.toFixed(2) + '</td></tr>')
+                             .append('<tr><td><b>P/L</b></td><td>' + dayNetTotal.toFixed(2) + '</td></tr>')
+                         )
+                 .appendTo(dayBlock);
+            $('#transaction-list').append(dayBlock);
+            $('#transaction-list').append('<br /><br />');
+
+            totalNetAmount += dayNetTotal;
+        }
+        $('#total-net-amount').text(totalNetAmount.toFixed(2));
+        
+        utils.loadPage('#content');
+
+    }
+</script>

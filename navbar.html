@@ -1,0 +1,39 @@
+<html style="overflow:hidden">
+    <link rel="stylesheet" type="text/css" href="/css/style.css" media="screen"/>
+    <div class="nav-bar">
+        <div id="site-title">Daytracker</div>
+        <div class="nav-links">
+            <div id="home">Home</div>
+            <div id="list">List</div>
+            <div id="login-logout-container"></div>
+        </div>
+    </div>
+    <script>
+        if (!getCookie('access_token')) {
+            document.getElementById('login-logout-container').innerHTML = '<div id="login">Login</a>';
+            setRoute('login', '/login.html');
+        } else {
+            document.getElementById('login-logout-container').innerHTML = '<div id="logout">Logout</a>';
+            setRoute('logout', '/logout.html');
+        }
+        setRoute('site-title', '/');
+        setRoute('home', '/');
+        setRoute('list', '/list.html');
+
+        function getCookie(name) {
+            var nameEQ = name + "=";
+            var ca = document.cookie.split(';');
+            for(var i=0;i < ca.length;i++) {
+                var c = ca[i];
+                while (c.charAt(0)==' ') c = c.substring(1,c.length);
+                if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+            }
+            return null;
+        }
+        
+        function setRoute(elementId, route) {
+            document.getElementById(elementId).addEventListener('click', function(e) { window.parent.location.replace(route) });
+            return null;
+        }
+    </script>
+</html>

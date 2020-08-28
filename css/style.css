@@ -1,0 +1,223 @@
+body {
+    margin: 0;
+}
+.page-container {
+    font-family: Arial;
+    color: #333;
+}
+
+.login.page-container {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.home.page-container,
+.list.page-container {
+    padding-top: 5vh;
+}
+
+.login-box {
+    height: 50vh;
+    width: 600px;
+    padding: 15px;
+    box-shadow: 0px 0px 5px 0px #d3d3d3;
+    margin-bottom: 25vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #dbdbdb;
+}
+.login-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items:center;
+    margin-bottom: 10vh;
+}
+.login-btn {
+    border: none;
+    outline: none;
+    background: #4ab95c;
+    padding: 19px 120px;
+    cursor: pointer;
+    color: white;
+    font-size: 1.4rem;
+    font-weight: bold;
+}
+
+.nav-bar-object {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 3vh;
+    display: flex;
+    align-items: center;
+    padding: 1vh 0;
+    width: 100vw;
+    background-color: #4ab95b;
+}
+
+.nav-bar-object html {
+    overflow: hidden;
+}
+
+.nav-bar {
+    padding: 1vh 2vw;
+    display:flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #ffffff;
+}
+
+.nav-bar #site-title {
+    font-size: 1.7rem;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.nav-bar .nav-links {
+    font-family: arial;
+    display: flex;
+    flex-direction: row;
+    font-size: 1.1rem;
+    cursor: pointer;
+}
+
+.nav-bar .nav-links>div {
+    padding: 0 10px;
+}
+
+.loading-object {
+    position: absolute;
+    width: 100vw;
+    height: 95vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+#loading-container {
+    height: 90vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+#content {
+    padding: 15px 25vw;
+}
+
+#loading-container .loading-text {
+    font-size: 2rem;
+    color: #999;
+    padding-bottom: 5vh;
+}
+
+
+.home #content {
+    width: 100%;
+    height: 100%;
+    padding-top: 10vh;
+    font-size: 1.5rem;
+}
+
+.transaction-block {
+    padding: 20px 10px;
+}
+
+.transaction-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+.transaction-table.profit {
+    color: rgb(0, 134, 8);
+}
+.transaction-table.loss {
+    color: rgba(220, 0, 12, 0.9);
+}
+
+
+.transaction-block:nth-child(even)  {
+    background-color: #f1f1f1;
+}
+
+.transaction-table td {
+    padding: 5px;
+    width:80%;
+
+}
+
+.transaction-table tr>td:first-child {
+    width:20%;
+}
+
+.day-total-block {
+    padding: 20px 10px;
+    border-top: 1px solid #80808047;
+}
+
+.day-total-block.profit {
+    background-color: rgba(0, 255, 3, 0.0785);
+}
+
+.day-total-block.loss {
+    background-color: rgba(255, 0, 0, 0.0785);
+}
+
+
+.day-total-table {
+    width: 100%;
+}
+
+.day-total-table td {
+    padding: 0;
+    padding-top: 3px;
+    padding-bottom: 3px;
+    width:80%;
+
+}
+.day-total-table tr>td:first-child {
+    width:20%;
+}
+
+.day-block {
+    box-shadow: 0px 0px 4px 1px #d6d2d2;
+}
+
+.net-total-row {
+    font-weight: bold;
+    font-size: 1.3rem;
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+}
+.net-total-row span:first-child {
+    margin-right: 5px;
+    font-weight: initial;
+}
+
+.datepicker-container {
+    display: flex;
+    justify-content: flex-end;
+    padding-top: 15px;
+    align-items: center;
+}
+
+.datepicker-container input {
+    margin-left: 10px;
+}
+
+.no-results {
+    width: 100%;
+    height: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 2.5rem;
+    color: #a5a5a5;
+}
