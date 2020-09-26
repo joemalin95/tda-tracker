@@ -11,34 +11,34 @@
 <script src="utils.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
 <script>
-    $(document).ready( function() {
+$(document).ready( function() {
 
-        function setRoutes() {
-            if (!utils.getCookie('access_token')) {
-                document.getElementById('login-logout-container').innerHTML = '<div id="login">Login</a>';
-                setRoute('login', '/login.html');
-            } else {
-                document.getElementById('login-logout-container').innerHTML = '<div id="logout">Logout</a>';
-                setRoute('logout', '/logout.html');
-            }
-            setRoute('site-title', '/');
-            setRoute('home', '/');
-            setRoute('list', '/list.html');
+    function setRoutes() {
+        if (!utils.getCookie('access_token')) {
+            document.getElementById('login-logout-container').innerHTML = '<div id="login">Login</a>';
+            setRoute('login', '/login.html');
+        } else {
+            document.getElementById('login-logout-container').innerHTML = '<div id="logout">Logout</a>';
+            setRoute('logout', '/logout.html');
         }
-        
-        function setRoute(elementId, route) {
-            document.getElementById(elementId).addEventListener('click', function(e) { window.parent.location.replace(route) });
-            return null;
-        }
+        setRoute('site-title', '/');
+        setRoute('home', '/');
+        setRoute('list', '/list.html');
+    }
+    
+    function setRoute(elementId, route) {
+        document.getElementById(elementId).addEventListener('click', function(e) { window.parent.location.replace(route) });
+        return null;
+    }
 
-        $.when(
-            $.getScript( "utils.js" ),
-            $.Deferred(function( deferred ){
-                $( deferred.resolve );
-            })
-        ).done(function(){
-            setRoutes();
-        });
+    $.when(
+        $.getScript( "utils.js" ),
+        $.Deferred(function( deferred ){
+            $( deferred.resolve );
+        })
+    ).done(function(){
+        setRoutes();
     });
+});
 </script>
 </html>

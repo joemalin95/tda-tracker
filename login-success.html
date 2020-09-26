@@ -1,5 +1,6 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
 <script>
+$(document).ready( function() {
     function retrieveAccessToken() {
         var url = window.location;
         var access_token = utils.getCookie('access_token');
@@ -36,4 +37,5 @@
     ).done(function(){
         retrieveAccessToken();
     });
+});
 </script>
