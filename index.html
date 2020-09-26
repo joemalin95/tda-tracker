@@ -2,10 +2,7 @@
 
 <div class="home page-container">
     <object class="nav-bar-object" type="text/html" data="navbar.html"></object>
-    <div id="loading-container">
-        <div class="loading-text">Loading</div>
-        <img src="/assets/grid.svg">
-    </div>
+    <object id="loading-object" class="loading-object" type="text/html" data="loading.html"></object>
     <div id="content" style="display: none">
         <div>
             Hello <span id="display-name"></span>
@@ -15,22 +12,13 @@
     </div>
 </div>
 
+<script src="utils.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
 <script>
-    var loading = true;
-    setTimeout(function() { loading = false; }, 500);
 
-    function getAccessToken(callback) {
-        var url = window.location;
-        var access_token = getCookie('access_token');
-        console.log(access_token);
-        if (!access_token) {
-            loadUnauthorizedPage();
-        } else {
-            callback(access_token);
-        }
-    }
-    function getAccountData(access_token) {
+$(document).ready( function() {
+
+    function getAccountData(access_token, callback) {
         $.ajax({
             type: "GET",
             url: 'https://api.tdameritrade.com/v1/accounts',
@@ -38,7 +26,7 @@
               xhr.setRequestHeader("Authorization", "Bearer " + access_token);
             },
             error: function() {
-                eraseCookie('access_token');  
+                utils.eraseCookie('access_token');  
             },
             success: function(accounts) {
                 console.log(accounts);
@@ -49,7 +37,7 @@
                       xhr.setRequestHeader("Authorization", "Bearer " + access_token);
                     },
                     success: function(userPrincipals) {
-                        loadPage(userPrincipals);
+                        callback(userPrincipals);
                     }
                 });
             }
@@ -57,35 +45,27 @@
 
     }
 
-    function loadUnauthorizedPage() {
-        $('#content').text('You are not logged in and that is O.K.');
-        $('#loading-container').hide();
-        $('#content').show();
+    function render(userPrincipals, callback) {
+        var name = userPrincipals['accounts'][0]['displayName'];
+        $('#display-name').text(name);
+        callback();
     }
 
-
-    function loadPage(userPrincipals) {
-        if (!loading) {
-            var name = userPrincipals['accounts'][0]['displayName'];
-            $('#display-name').html(name);
-            $('#loading-container').hide();
-            $('#content').show();
-        } else {
-
-            setTimeout(function() { loadPage(userPrincipals); }, 100);
-        }
-    }
-
-    function getCookie(name) {
-        var nameEQ = name + "=";
-        var ca = document.cookie.split(';');
-        for(var i=0;i < ca.length;i++) {
-            var c = ca[i];
-            while (c.charAt(0)==' ') c = c.substring(1,c.length);
-            if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
-        }
-        return null;
-    }
-
-    getAccessToken(getAccountData);
+    $.when(
+        $.getScript( "utils.js" ),
+        $.Deferred(function( deferred ){
+            $( deferred.resolve );
+        })
+    ).done(function(){
+        utils.startLoading('#content', .75);
+        // get access token
+        utils.getAccessToken(function(accessToken) {
+            // get account data
+            getAccountData(accessToken, function(data) {
+                // render page
+                render(data, utils.loadPage);
+            });
+        });
+    });
+});
 </script>

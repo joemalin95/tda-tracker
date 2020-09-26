@@ -24,7 +24,7 @@
             $( deferred.resolve );
         })
     ).done(function(){
-        utils.startLoading(.5);
+        utils.startLoading('#content', .75);
         utils.getAccessToken(function(accessToken) {
             Trades = new Transactions();
             var transactionsDict = Trades.fetch(accessToken, render);

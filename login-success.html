@@ -1,0 +1,39 @@
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+<script>
+    function retrieveAccessToken() {
+        var url = window.location;
+        var access_token = utils.getCookie('access_token');
+        if (access_token != null) {
+            window.location.replace('/login.html');
+        }
+
+        var authorization_code = new URLSearchParams(url.search).get('code');
+        $.ajax({
+            type: "POST",
+            url: 'https://api.tdameritrade.com/v1/oauth2/token',
+            data: {
+                grant_type: 'authorization_code',
+                client_id: utils.CONSUMER_KEY,
+                code: authorization_code,
+                redirect_uri: utils.REDIRECT_URI,
+            },
+            error: function(e) {
+                console.error('getAccessToken error: ' + e);
+                window.location.replace('/login.html');
+            },
+            success: function(data) {
+                utils.setCookie('access_token',data.access_token,30);
+                window.location.replace('index.html');
+            }
+        });
+    }
+
+    $.when(
+        $.getScript( "utils.js" ),
+        $.Deferred(function( deferred ){
+            $( deferred.resolve );
+        })
+    ).done(function(){
+        retrieveAccessToken();
+    });
+</script>

@@ -1,4 +1,16 @@
 utils = {
+    CONSUMER_KEY: 'YOUR_KEY_HERE',
+    REDIRECT_URI: 'YOUR_REDIRECT_URI_HERE',
+    setCookie: function (name,value,minutes) {
+        var expires = "";
+        if (minutes) {
+            var date = new Date();
+            date.setTime(date.getTime() + (minutes*60*60*1000));
+            expires = "; expires=" + date.toUTCString();
+        }
+        document.cookie = name + "=" + (value || "")  + expires + "; path=/";
+    },
+
     getCookie: function(name) {
         var nameEQ = name + "=";
         var ca = document.cookie.split(';');
@@ -8,6 +20,10 @@ utils = {
             if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
         }
         return null;
+    },
+
+    eraseCookie: function(name) {   
+        document.cookie = name+'=; Max-Age=-99999999;';  
     },
 
     getAccessToken: function(callback) {
@@ -39,7 +55,8 @@ utils = {
 
     loading: false,
 
-    startLoading: function(debounce) { 
+    startLoading: function(selector, debounce) { 
+        utils.selector = selector;
         $('.loading-object').contents().find('#loading-container').show();
         $('#loading-object').show();
         $(utils.selector).hide();
@@ -47,14 +64,13 @@ utils = {
         setTimeout(function() { utils.loading = false; }, debounce*1000) 
     },
 
-    loadPage: function(selector) {
-        utils.selector = selector;
+    loadPage: function() {
         if (!utils.loading) {
             $('.loading-object').contents().find('#loading-container').hide();
             $('#loading-object').hide();
-            $(selector).show();
+            $(utils.selector).show();
         } else {
-            setTimeout(function() { utils.loadPage(selector); }, 100);
+            setTimeout(function() { utils.loadPage(); }, 100);
         }
     },
     selector: null

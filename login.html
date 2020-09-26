@@ -3,12 +3,27 @@
 <div class="login page-container">
     <object class="nav-bar-object" type="text/html" data="navbar.html"></object>
     <div class="login-box">
-        <div class="login-content">
+        <div id='login-content' class="login-content">
             <h1>Please Login to Continue</h1>
-            <!-- DO NOT SHARE THIS CLIENT ID -->
-            <a href="https://auth.tdameritrade.com/auth?response_type=code&redirect_uri=YOUR_REDIRECT_URI&client_id=YOUR_CONSUMER_KEY%40amer.oauthap">
-               <button class="login-btn">Login to TDAmeritrade</button>
-            </a>
+            <button id='login-btn' class="login-btn">Login to TDAmeritrade</button>
         </div>
     </div>
 </div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+<script>
+
+$(document).ready( function() {
+    $.when(
+        $.getScript( "utils.js" ),
+        $.getScript( "https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js" ),
+        $.Deferred(function( deferred ){
+            $( deferred.resolve );
+        })
+    ).done(function(){
+        const redirect_uri = encodeURI(utils.REDIRECT_URI);
+        const consumer_key = encodeURI(utils.CONSUMER_KEY + '@AMER.OAUTHAP');
+        const login_link = $('<a href="https://auth.tdameritrade.com/auth?response_type=code&redirect_uri='+redirect_uri+'&client_id='+consumer_key+'"></a>');
+        $('#login-btn').wrap(login_link);
+    });
+});
+</script>
